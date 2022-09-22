@@ -17,6 +17,11 @@ dependencies:
   http: ^0.13.5
   flutter_dotenv: ^5.0.2
   shared_preferences: ^2.0.15
+  intl: ^0.17.0
+  flutter_svg: ^1.1.5
+  expandable: ^5.0.1
+  flutter_typeahead: ^4.1.1
+  syncfusion_flutter_charts: ^20.2.50
 
 dev_dependencies:
   flutter_test:
@@ -28,3 +33,4 @@ flutter:
 
   assets:
     - .env
+    - assets/
