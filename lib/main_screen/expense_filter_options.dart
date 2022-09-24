@@ -45,19 +45,6 @@ class ExpenseFilterOptions extends StatelessWidget {
               },
             ),
             ListTile(
-              trailing: expensesProvider.filter == FilterOptions.week
-                  ? Icon(
-                      Icons.check_circle_outline,
-                      color: Theme.of(context).primaryColor,
-                    )
-                  : null,
-              title: const Text('השבוע האחרון'),
-              onTap: () {
-                expensesProvider.setFilter(FilterOptions.week);
-                Navigator.of(context).pop();
-              },
-            ),
-            ListTile(
               trailing: expensesProvider.filter == FilterOptions.month
                   ? Icon(
                       Icons.check_circle_outline,
@@ -67,6 +54,19 @@ class ExpenseFilterOptions extends StatelessWidget {
               title: const Text('החודש האחרון'),
               onTap: () {
                 expensesProvider.setFilter(FilterOptions.month);
+                Navigator.of(context).pop();
+              },
+            ),
+            ListTile(
+              trailing: expensesProvider.filter == FilterOptions.threeMonths
+                  ? Icon(
+                      Icons.check_circle_outline,
+                      color: Theme.of(context).primaryColor,
+                    )
+                  : null,
+              title: const Text(' 3 חודשים אחרונים'),
+              onTap: () {
+                expensesProvider.setFilter(FilterOptions.threeMonths);
                 Navigator.of(context).pop();
               },
             ),

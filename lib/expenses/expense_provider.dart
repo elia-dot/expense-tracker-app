@@ -1,19 +1,19 @@
 import 'dart:convert';
 
-import 'package:expense_tracker_app/chartdata/chart_data.dart';
-import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter/material.dart';
 
+import 'package:expense_tracker_app/chartdata/chart_data.dart';
 import 'package:expense_tracker_app/user/user.dart';
 import 'package:expense_tracker_app/shops/shop.dart';
 
 enum FilterOptions {
   all,
   day,
-  week,
   month,
+  threeMonths,
   custom,
 }
 
@@ -39,7 +39,7 @@ class Expense {
 
 class ExpenseProvider with ChangeNotifier {
   List<Expense> _expenses = [];
-  FilterOptions filter = FilterOptions.all;
+  FilterOptions filter = FilterOptions.month;
   List<Expense> filterExpenses = [];
 
   DateTime customExpensesDate = DateTime.now();
@@ -74,23 +74,24 @@ class ExpenseProvider with ChangeNotifier {
         break;
       case FilterOptions.day:
         filterExpenses = _expenses
-            .where((expense) =>
-                expense.date.day == DateTime.now().day &&
-                expense.date.month == DateTime.now().month)
+            .where(
+              (expense) =>
+                  expense.date.day == DateTime.now().day &&
+                  expense.date.month == DateTime.now().month &&
+                  expense.date.year == DateTime.now().year,
+            )
             .toList();
         notifyListeners();
         break;
-      case FilterOptions.week:
+      case FilterOptions.threeMonths:
         filterExpenses = _expenses
-            .where((expense) => expense.date
-                .isAfter(DateTime.now().subtract(const Duration(days: 7))))
+            .where((expense) => expense.date.month >= DateTime.now().month - 3)
             .toList();
         notifyListeners();
         break;
       case FilterOptions.month:
         filterExpenses = _expenses
-            .where((expense) => expense.date
-                .isAfter(DateTime.now().subtract(const Duration(days: 30))))
+            .where((expense) => expense.date.month == DateTime.now().month)
             .toList();
         notifyListeners();
         break;

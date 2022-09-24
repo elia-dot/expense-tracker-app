@@ -29,8 +29,8 @@ class _MainScreenState extends State<MainScreen> {
         return 'הכל';
       case FilterOptions.day:
         return 'היום';
-      case FilterOptions.week:
-        return 'השבוע האחרון';
+      case FilterOptions.threeMonths:
+        return ' 3 חודשים';
       case FilterOptions.month:
         return 'החודש האחרון';
       case FilterOptions.custom:
@@ -48,6 +48,7 @@ class _MainScreenState extends State<MainScreen> {
         Provider.of<ExpenseProvider>(context, listen: false);
     await expensesProvider.fetchAndSetExpenses();
     await expensesProvider.getMonthlyExpenses();
+    expensesProvider.setFilter(FilterOptions.month);
     setState(() {
       isLoading = false;
     });
@@ -91,7 +92,7 @@ class _MainScreenState extends State<MainScreen> {
     final width = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('הוצאות'),
+        title: const Text('מעקב הוצאות'),
         actions: [
           IconButton(
             onPressed: () {
@@ -124,7 +125,7 @@ class _MainScreenState extends State<MainScreen> {
               )
             : expensesProvider.expenses.isEmpty
                 ? const Center(
-                    child: Text('No expenses'),
+                    child: Text('אין הוצאות'),
                   )
                 : Padding(
                     padding: const EdgeInsets.all(8.0),
