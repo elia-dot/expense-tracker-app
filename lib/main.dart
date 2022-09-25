@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
+import 'package:expense_tracker_app/expenses/montly_expenses_charts.dart';
 import 'package:expense_tracker_app/shops/shop_details.dart';
 import 'package:expense_tracker_app/shops/shop.dart';
 import 'package:expense_tracker_app/shops/shops_page.dart';
@@ -87,8 +88,10 @@ class MyApp extends StatelessWidget {
                   ),
             routes: {
               MainScreen.routeName: (ctx) => const MainScreen(),
+              AuthScreen.routeName: (ctx) => const AuthScreen(),
               ShopsPage.routeName: (ctx) => const ShopsPage(),
               ShopDetails.routeName: (ctx) => const ShopDetails(),
+              MonthlyCharts.routeName: (ctx) => const MonthlyCharts(),
             },
           ),
         ),

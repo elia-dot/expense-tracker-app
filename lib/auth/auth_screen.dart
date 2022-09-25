@@ -7,6 +7,7 @@ import 'package:expense_tracker_app/theme/app_colors.dart';
 import 'package:expense_tracker_app/auth/auth_provider.dart' as auth;
 
 class AuthScreen extends StatelessWidget {
+  static const routeName = '/auth';
   const AuthScreen({Key? key}) : super(key: key);
 
   @override

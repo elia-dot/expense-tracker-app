@@ -107,6 +107,7 @@ class ShopProvider with ChangeNotifier {
             name: expense['createdBy']['name'],
             email: expense['createdBy']['email'],
             isPasswordConfirm: expense['createdBy']['isPasswordConfirm'],
+            monthlyBudget: expense['createdBy']['monthlyBudget'].toDouble(),
           ),
         );
         shopExpenses.add(newExpense);

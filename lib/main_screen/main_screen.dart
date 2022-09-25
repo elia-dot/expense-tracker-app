@@ -1,3 +1,4 @@
+import 'package:expense_tracker_app/main_screen/budget_box.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -72,13 +73,11 @@ class _MainScreenState extends State<MainScreen> {
     final expensesProvider =
         Provider.of<ExpenseProvider>(context, listen: false);
     final months = expensesProvider.months;
-    int currentMonth = DateTime.now().month;
     for (var i = 0; i < months.length; i++) {
-      if (getMonthName(currentMonth) == getMonthName(int.parse(months[i]))) {}
       pages.add(
         MainScreenChart(
-          monthlyExpenses: expensesProvider.monthlyExpenses,
-          month: int.parse(months[i]),
+          month: months[i],
+          pageController: _pageController,
         ),
       );
     }
@@ -89,7 +88,7 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     final expensesProvider = Provider.of<ExpenseProvider>(context);
     List<Expense> expenses = expensesProvider.groupExpenses.reversed.toList();
-    final width = MediaQuery.of(context).size.width;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('מעקב הוצאות'),
@@ -132,14 +131,7 @@ class _MainScreenState extends State<MainScreen> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        SizedBox(
-                          height: width * 0.8,
-                          width: width,
-                          child: PageView(
-                            controller: _pageController,
-                            children: buildChart(),
-                          ),
-                        ),
+                        const BudgetBox(),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 8.0),
                           child: Row(

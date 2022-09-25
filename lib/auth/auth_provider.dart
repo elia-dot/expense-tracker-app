@@ -8,8 +8,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:expense_tracker_app/user/user.dart';
 
 class Auth with ChangeNotifier {
-  final User _authUser =
-      User(id: '', email: '', name: '', isPasswordConfirm: false);
+  final User _authUser = User(
+      id: '', email: '', name: '', isPasswordConfirm: false, monthlyBudget: 0);
 
   User get authUser {
     return _authUser;
@@ -28,6 +28,7 @@ class Auth with ChangeNotifier {
         'email': user.email,
         'name': user.name,
         'isPasswordConfirm': user.isPasswordConfirm,
+        'monthlyBudget': user.monthlyBudget,
       }),
     );
   }
@@ -45,6 +46,7 @@ class Auth with ChangeNotifier {
         _authUser.email = userData['email'];
         _authUser.name = userData['name'];
         _authUser.isPasswordConfirm = userData['isPasswordConfirm'];
+        _authUser.monthlyBudget = userData['monthlyBudget'].toDouble();
         notifyListeners();
         await setUserData(_authUser);
       } else {
@@ -58,6 +60,7 @@ class Auth with ChangeNotifier {
     _authUser.name = extractedUserData['name'] as String;
     _authUser.isPasswordConfirm =
         extractedUserData['isPasswordConfirm'] as bool;
+    _authUser.monthlyBudget = extractedUserData['monthlyBudget'] as double;
     notifyListeners();
   }
 
@@ -88,6 +91,21 @@ class Auth with ChangeNotifier {
     return 'login';
   }
 
+  Future<String> setBudget(double budget) async {
+    var res = await http.patch(
+      Uri.parse('${dotenv.env['API']}/users/update'),
+      headers: await headers(),
+      body: json.encode({'monthlyBudget': budget}),
+    );
+    if (res.statusCode == 200) {
+      _authUser.monthlyBudget = budget;
+      setUserData(authUser);
+      notifyListeners();
+      return 'done';
+    }
+    return 'error';
+  }
+
   Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
     prefs.clear();
@@ -95,6 +113,7 @@ class Auth with ChangeNotifier {
     _authUser.email = '';
     _authUser.name = '';
     _authUser.isPasswordConfirm = false;
+    _authUser.monthlyBudget = 0;
     notifyListeners();
   }
 }

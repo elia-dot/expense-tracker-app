@@ -1,10 +1,12 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/material.dart';
 
+import 'package:expense_tracker_app/chartdata/category_chart_data.dart';
 import 'package:expense_tracker_app/chartdata/chart_data.dart';
 import 'package:expense_tracker_app/user/user.dart';
 import 'package:expense_tracker_app/shops/shop.dart';
@@ -41,6 +43,9 @@ class ExpenseProvider with ChangeNotifier {
   List<Expense> _expenses = [];
   FilterOptions filter = FilterOptions.month;
   List<Expense> filterExpenses = [];
+  Map<String, List<ChartData>> monthlyExpenses = {};
+  List<CategoryChartData> categoriesChartData = [];
+  Map<String, Color> categoriesColors = {};
 
   DateTime customExpensesDate = DateTime.now();
 
@@ -57,12 +62,12 @@ class ExpenseProvider with ChangeNotifier {
   List<String> get months {
     List<String> months = [];
     for (int i = 0; i < _expenses.length; i++) {
-      if (!months.contains(_expenses[i].date.month.toString())) {
-        months.add(_expenses[i].date.month.toString());
+      String month = '${_expenses[i].date.month}-${_expenses[i].date.year}';
+      if (!months.contains(month)) {
+        months.add(month);
       }
     }
-    months.sort((a, b) => int.parse(b).compareTo(int.parse(a)));
-    return months;
+    return months.reversed.toList();
   }
 
   void setFilter(FilterOptions selectedFilter) {
@@ -109,11 +114,8 @@ class ExpenseProvider with ChangeNotifier {
 
   void setCustomExpensesDate(DateTime date) {
     customExpensesDate = date;
-
     notifyListeners();
   }
-
-  Map<String, List<ChartData>> monthlyExpenses = {};
 
   double get totalAmount {
     if (filter == FilterOptions.all) {
@@ -177,7 +179,11 @@ class ExpenseProvider with ChangeNotifier {
         createdBy: createUser(data['expense']['createdBy']),
       );
       _expenses.add(expense);
-      String month = '${DateTime.now().month}';
+      if (filter != FilterOptions.custom) {
+        filterExpenses.add(expense);
+      }
+      notifyListeners();
+      String month = '${DateTime.now().month}-${DateTime.now().year}';
       String day = '${DateTime.now().day}';
       if (monthlyExpenses[month] == null) {
         monthlyExpenses[month] = [ChartData(day, expense.amount)];
@@ -199,6 +205,47 @@ class ExpenseProvider with ChangeNotifier {
     return 'error';
   }
 
+  Color getCategoryColor(String category) {
+    if (categoriesColors[category] == null) {
+      categoriesColors[category] =
+          Color((Random().nextDouble() * 0xFFFFFF).toInt()).withOpacity(1.0);
+    }
+    return categoriesColors[category]!;
+  }
+
+  Map<String, List<Expense>> getExpensesByMonth(String month) {
+    Map<String, List<Expense>> monthlyExpensesByCategory = {};
+    List<Expense> expenses = _expenses
+        .where(
+            (expense) => expense.date.month == int.parse(month.split('-')[0]))
+        .toList();
+    for (int i = 0; i < expenses.length; i++) {
+      if (monthlyExpensesByCategory[expenses[i].shop.category] == null) {
+        monthlyExpensesByCategory[expenses[i].shop.category] = [expenses[i]];
+      } else {
+        monthlyExpensesByCategory[expenses[i].shop.category]!.add(expenses[i]);
+      }
+    }
+    categoriesChartData = [];
+    monthlyExpensesByCategory.forEach((key, value) {
+      for (Expense expense in value) {
+        var indexOfCategory = categoriesChartData
+            .indexWhere((element) => element.category == expense.shop.category);
+        if (indexOfCategory == -1) {
+          categoriesChartData.add(
+            CategoryChartData(key, expense.amount, getCategoryColor(key)),
+          );
+        } else {
+          categoriesChartData[indexOfCategory] = CategoryChartData(
+              expense.shop.category,
+              categoriesChartData[indexOfCategory].amount + expense.amount,
+              getCategoryColor(expense.shop.category));
+        }
+      }
+    });
+    return monthlyExpensesByCategory;
+  }
+
   Future<void> getMonthlyExpenses() async {
     final res = await http.get(
       Uri.parse('${dotenv.env['API']}/expenses/monthly'),
@@ -218,11 +265,7 @@ class ExpenseProvider with ChangeNotifier {
         });
       });
       monthlyExpenses = expenses;
-      for (int i = 1; i < 31; i++) {
-        if (monthlyExpenses['$i'] == null) {
-          monthlyExpenses['$i'] = [];
-        }
-      }
+
       notifyListeners();
     } else {
       throw Exception('Failed to load expenses');
@@ -245,6 +288,7 @@ class ExpenseProvider with ChangeNotifier {
       email: user['email'],
       name: user['name'],
       isPasswordConfirm: user['isPasswordConfirm'],
+      monthlyBudget: user['monthlyBudget'].toDouble(),
     );
   }
 }
