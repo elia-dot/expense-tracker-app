@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
+import 'package:expense_tracker_app/group/group_provider.dart';
+import 'package:expense_tracker_app/group/group_page.dart';
 import 'package:expense_tracker_app/expenses/montly_expenses_charts.dart';
 import 'package:expense_tracker_app/shops/shop_details.dart';
 import 'package:expense_tracker_app/shops/shop.dart';
@@ -27,6 +29,7 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => Auth()),
         ChangeNotifierProvider(create: (_) => ShopProvider()),
+        ChangeNotifierProvider(create: (_) => GroupProvider()),
         ChangeNotifierProvider(
           create: (_) => ExpenseProvider(),
         )
@@ -92,6 +95,7 @@ class MyApp extends StatelessWidget {
               ShopsPage.routeName: (ctx) => const ShopsPage(),
               ShopDetails.routeName: (ctx) => const ShopDetails(),
               MonthlyCharts.routeName: (ctx) => const MonthlyCharts(),
+              GroupPage.routeName: (ctx) => const GroupPage(),
             },
           ),
         ),

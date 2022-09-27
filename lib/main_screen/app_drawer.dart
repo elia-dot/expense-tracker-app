@@ -1,6 +1,8 @@
+import 'package:expense_tracker_app/user/user_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'package:expense_tracker_app/group/group_page.dart';
 import 'package:expense_tracker_app/auth/auth_screen.dart';
 import 'package:expense_tracker_app/expenses/montly_expenses_charts.dart';
 import 'package:expense_tracker_app/auth/auth_provider.dart';
@@ -26,10 +28,7 @@ class AppDrawer extends StatelessWidget {
                 child: DrawerHeader(
                   child: Row(
                     children: [
-                      Image.asset(
-                        'assets/logo.png',
-                        width: 50,
-                      ),
+                      UserAvatar(user: authProvider.authUser),
                       const SizedBox(
                         width: 10,
                       ),
@@ -49,6 +48,26 @@ class AppDrawer extends StatelessWidget {
                   children: [
                     const SizedBox(
                       height: 40,
+                    ),
+                    ListTile(
+                      leading: Icon(
+                        Icons.group,
+                        color: Theme.of(context).colorScheme.secondary,
+                      ),
+                      title: const Text(
+                        'קבוצה',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 26,
+                        ),
+                      ),
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.pushNamed(
+                          context,
+                          GroupPage.routeName,
+                        );
+                      },
                     ),
                     ListTile(
                       leading: Icon(
@@ -87,10 +106,11 @@ class AppDrawer extends StatelessWidget {
                     ),
                     Expanded(child: Container()),
                     ElevatedButton(
-                      onPressed: (() =>{
-                        authProvider.logout(),
-                        Navigator.of(context).pushReplacementNamed(AuthScreen.routeName),
-                      }),
+                      onPressed: (() => {
+                            authProvider.logout(),
+                            Navigator.of(context)
+                                .pushReplacementNamed(AuthScreen.routeName),
+                          }),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.center,

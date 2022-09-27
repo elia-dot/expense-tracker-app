@@ -1,7 +1,9 @@
 import 'package:expense_tracker_app/main_screen/budget_box.dart';
+import 'package:expense_tracker_app/main_screen/update_password.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'package:expense_tracker_app/auth/auth_provider.dart';
 import 'package:expense_tracker_app/main_screen/expense_filter_options.dart';
 import 'package:expense_tracker_app/expenses/add_expense.dart';
 import 'package:expense_tracker_app/expenses/expenses_list.dart';
@@ -87,105 +89,105 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     final expensesProvider = Provider.of<ExpenseProvider>(context);
+    final authProvider = Provider.of<Auth>(context);
     List<Expense> expenses = expensesProvider.groupExpenses.reversed.toList();
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('מעקב הוצאות'),
-        actions: [
-          IconButton(
-            onPressed: () {
-              showModalBottomSheet(
-                context: context,
-                shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.vertical(
-                    top: Radius.circular(16),
+    return authProvider.authUser.isPasswordConfirm
+        ? Scaffold(
+            appBar: AppBar(
+              title: const Text('מעקב הוצאות'),
+              actions: [
+                IconButton(
+                  onPressed: () {
+                    showModalBottomSheet(
+                      context: context,
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.vertical(
+                          top: Radius.circular(16),
+                        ),
+                      ),
+                      isScrollControlled: true,
+                      builder: ((context) {
+                        return const AddExpense();
+                      }),
+                    );
+                  },
+                  icon: const Icon(
+                    Icons.add,
                   ),
-                ),
-                isScrollControlled: true,
-                builder: ((context) {
-                  return const AddExpense();
-                }),
-              );
-            },
-            icon: const Icon(
-              Icons.add,
+                )
+              ],
             ),
-          )
-        ],
-      ),
-      body: Directionality(
-        textDirection: TextDirection.rtl,
-        child: isLoading
-            ? Center(
-                child: CircularProgressIndicator(
-                  color: Theme.of(context).colorScheme.secondary,
-                ),
-              )
-            : expensesProvider.expenses.isEmpty
-                ? const Center(
-                    child: Text('אין הוצאות'),
-                  )
-                : Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const BudgetBox(),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text(
-                                'הוצאות אחרונות',
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                              TextButton(
-                                style: TextButton.styleFrom(
-                                  backgroundColor: Colors.white,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  minimumSize: const Size(200, 40),
-                                  maximumSize: const Size(200, 40),
-                                ),
-                                onPressed: () {
-                                  showModalBottomSheet(
-                                    context: context,
-                                    shape: const RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.vertical(
-                                        top: Radius.circular(16),
-                                      ),
-                                    ),
-                                    builder: ((context) {
-                                      return ExpenseFilterOptions(
-                                          expensesProvider: expensesProvider);
-                                    }),
-                                  );
-                                },
-                                child: Text(
-                                  '$filterText : ${expenseAmount(expensesProvider.totalAmount)}',
+            body: Directionality(
+              textDirection: TextDirection.rtl,
+              child: isLoading
+                  ? Center(
+                      child: CircularProgressIndicator(
+                        color: Theme.of(context).colorScheme.secondary,
+                      ),
+                    )
+                  : Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const BudgetBox(),
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text(
+                                  'הוצאות אחרונות',
                                   style: TextStyle(
-                                    color: Theme.of(context).primaryColor,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.grey,
                                   ),
                                 ),
-                              ),
-                            ],
+                                TextButton(
+                                  style: TextButton.styleFrom(
+                                    backgroundColor: Colors.white,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    minimumSize: const Size(200, 40),
+                                    maximumSize: const Size(200, 40),
+                                  ),
+                                  onPressed: () {
+                                    showModalBottomSheet(
+                                      context: context,
+                                      shape: const RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.vertical(
+                                          top: Radius.circular(16),
+                                        ),
+                                      ),
+                                      builder: ((context) {
+                                        return ExpenseFilterOptions(
+                                            expensesProvider: expensesProvider);
+                                      }),
+                                    );
+                                  },
+                                  child: Text(
+                                    '$filterText : ${expenseAmount(expensesProvider.totalAmount)}',
+                                    style: TextStyle(
+                                      color: Theme.of(context).primaryColor,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                        Expanded(
-                          child: ExpensesList(expenses: expenses),
-                        ),
-                      ],
+                          Expanded(
+                            child: ExpensesList(expenses: expenses),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-      ),
-      drawer: const AppDrawer(),
-    );
+            ),
+            drawer: const AppDrawer(),
+          )
+        : const UpdatePassword();
   }
 }

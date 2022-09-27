@@ -3,9 +3,9 @@ import 'dart:convert';
 import 'package:expense_tracker_app/user/user.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
+import 'package:expense_tracker_app/utils/headers.dart';
 import 'package:expense_tracker_app/expenses/expense_provider.dart';
 
 class Shop {
@@ -37,16 +37,6 @@ class ShopProvider with ChangeNotifier {
 
   Map<String, dynamic> get categoryExpenses {
     return _categoryExpenses;
-  }
-
-  Future<Map<String, String>> headers() async {
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('authToken');
-    return {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      'Authorization': 'Bearer $token',
-    };
   }
 
   Future<void> fetchAndSetShops() async {

@@ -1,11 +1,11 @@
 import 'dart:convert';
 import 'dart:math';
 
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/material.dart';
 
+import 'package:expense_tracker_app/utils/headers.dart';
 import 'package:expense_tracker_app/chartdata/category_chart_data.dart';
 import 'package:expense_tracker_app/chartdata/chart_data.dart';
 import 'package:expense_tracker_app/user/user.dart';
@@ -123,16 +123,6 @@ class ExpenseProvider with ChangeNotifier {
     } else {
       return filterExpenses.fold(0, (sum, expense) => sum + expense.amount);
     }
-  }
-
-  Future<Map<String, String>> headers() async {
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('authToken');
-    return {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      'Authorization': 'Bearer $token',
-    };
   }
 
   Future<void> fetchAndSetExpenses() async {

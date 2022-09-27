@@ -28,8 +28,30 @@ class AuthScreen extends StatelessWidget {
       }
     }
 
-    Future<String> onRecoverPassword(String data) async {
-      return 'login';
+    Future<String?> onSignup(SignupData data) async {
+      final authProvider = Provider.of<auth.Auth>(context, listen: false);
+      String res = await authProvider.register({
+        'email': data.name,
+        'password': data.password,
+      });
+      if (res == 'register') {
+        Future.delayed(Duration.zero, () {
+          Navigator.of(context).pushReplacementNamed(MainScreen.routeName);
+        });
+        return null;
+      } else {
+        return res;
+      }
+    }
+
+    Future<String?> onRecoverPassword(String data) async {
+      final authProvider = Provider.of<auth.Auth>(context, listen: false);
+      String res = await authProvider.forgotPassword(data);
+      if (res != 'done') {
+        return res;
+      } else {
+        return null;
+      }
     }
 
     return Scaffold(
@@ -41,9 +63,7 @@ class AuthScreen extends StatelessWidget {
           ),
         ),
         onLogin: onLogin,
-        onSignup: (p0) {
-          return null;
-        },
+        onSignup: onSignup,
         messages: LoginMessages(
           userHint: 'אימייל',
           passwordHint: 'סיסמא',

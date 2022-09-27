@@ -5,11 +5,17 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:expense_tracker_app/utils/headers.dart';
 import 'package:expense_tracker_app/user/user.dart';
 
 class Auth with ChangeNotifier {
   final User _authUser = User(
-      id: '', email: '', name: '', isPasswordConfirm: false, monthlyBudget: 0);
+    id: '',
+    email: '',
+    name: '',
+    isPasswordConfirm: false,
+    monthlyBudget: 0,
+  );
 
   User get authUser {
     return _authUser;
@@ -64,16 +70,6 @@ class Auth with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<Map<String, String>> headers() async {
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('authToken');
-    return {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      'Authorization': 'Bearer $token',
-    };
-  }
-
   Future<String> login(Map<String, dynamic> data) async {
     final res = await http.post(
       Uri.parse('${dotenv.env['API']}/auth/login'),
@@ -91,12 +87,47 @@ class Auth with ChangeNotifier {
     return 'login';
   }
 
+  Future<String> register(Map<String, dynamic> data) async {
+    final res = await http.post(
+      Uri.parse('${dotenv.env['API']}/auth/signup'),
+      body: data,
+    );
+    var resData = json.decode(res.body);
+    if (res.statusCode >= 400 && res.statusCode < 500) {
+      if (resData['message'] == 'User already exists') {
+        return 'משתמש עם כתובת מייל זו כבר קיים';
+      }
+      return 'אירעה שגיאה';
+    } else if (res.statusCode >= 500) {
+      return 'אירעה שגיאה';
+    }
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString('authToken', resData['access_token']);
+    getCurrentUser();
+    return 'register';
+  }
+
+  Future<void> updatePassword(String password) async {
+    var body = json.encode({'newPassword': password});
+    final res = await http.post(
+      Uri.parse('${dotenv.env['API']}/auth/update-password'),
+      body: body,
+      headers: await headers(),
+    );
+    if (res.statusCode == 200) {
+      _authUser.isPasswordConfirm = true;
+      notifyListeners();
+      await setUserData(_authUser);
+    }
+  }
+
   Future<String> setBudget(double budget) async {
     var res = await http.patch(
       Uri.parse('${dotenv.env['API']}/users/update'),
       headers: await headers(),
       body: json.encode({'monthlyBudget': budget}),
     );
+
     if (res.statusCode == 200) {
       _authUser.monthlyBudget = budget;
       setUserData(authUser);
@@ -104,6 +135,19 @@ class Auth with ChangeNotifier {
       return 'done';
     }
     return 'error';
+  }
+
+  Future<String> forgotPassword(String email) async {
+    var res = await http.post(
+      Uri.parse('${dotenv.env['API']}/auth/forgot-password/$email'),
+    );
+    if (res.statusCode == 200) {
+      return 'done';
+    }
+    if (json.decode(res.body)['message'] == 'User not found') {
+      return 'משתמש לא נמצא';
+    }
+    return 'אירעה שגיאה';
   }
 
   Future<void> logout() async {
