@@ -3,7 +3,12 @@ import 'package:flutter/material.dart';
 
 class UserAvatar extends StatelessWidget {
   final User user;
-  const UserAvatar({Key? key, required this.user}) : super(key: key);
+  final double fontSize;
+  const UserAvatar({
+    Key? key,
+    required this.user,
+    this.fontSize = 20,
+  }) : super(key: key);
 
   String createInitials() {
     final name = user.name.split(' ');
@@ -24,9 +29,10 @@ class UserAvatar extends StatelessWidget {
         child: Center(
           child: Text(
             createInitials(),
+            textAlign: TextAlign.center,
             style: TextStyle(
               color: Theme.of(context).primaryColor,
-              fontSize: 20,
+              fontSize: fontSize,
             ),
           ),
         ),

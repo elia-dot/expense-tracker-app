@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:expense_tracker_app/user/craete_user.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/material.dart';
@@ -272,13 +273,5 @@ class ExpenseProvider with ChangeNotifier {
     );
   }
 
-  User createUser(Map user) {
-    return User(
-      id: user['_id'],
-      email: user['email'],
-      name: user['name'],
-      isPasswordConfirm: user['isPasswordConfirm'],
-      monthlyBudget: user['monthlyBudget'].toDouble(),
-    );
-  }
+ 
 }

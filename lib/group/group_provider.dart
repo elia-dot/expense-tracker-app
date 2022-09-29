@@ -28,6 +28,7 @@ class GroupProvider extends ChangeNotifier {
           name: member['name'],
           isPasswordConfirm: member['isPasswordConfirm'],
           monthlyBudget: member['monthlyBudget'].toDouble(),
+          allowNotifications: member['allowNotifications'],
         ));
       }
       notifyListeners();
@@ -53,6 +54,7 @@ class GroupProvider extends ChangeNotifier {
           name: userData['user']['name'],
           isPasswordConfirm: userData['user']['isPasswordConfirm'],
           monthlyBudget: userData['user']['monthlyBudget'].toDouble(),
+          allowNotifications: userData['user']['allowNotifications'],
         ),
       );
       notifyListeners();

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:expense_tracker_app/user/craete_user.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -9,12 +10,13 @@ import 'package:expense_tracker_app/utils/headers.dart';
 import 'package:expense_tracker_app/user/user.dart';
 
 class Auth with ChangeNotifier {
-  final User _authUser = User(
+  User _authUser = User(
     id: '',
     email: '',
     name: '',
     isPasswordConfirm: false,
     monthlyBudget: 0,
+    allowNotifications: false,
   );
 
   User get authUser {
@@ -35,6 +37,7 @@ class Auth with ChangeNotifier {
         'name': user.name,
         'isPasswordConfirm': user.isPasswordConfirm,
         'monthlyBudget': user.monthlyBudget,
+        'allowNotifications': user.allowNotifications,
       }),
     );
   }
@@ -53,6 +56,7 @@ class Auth with ChangeNotifier {
         _authUser.name = userData['name'];
         _authUser.isPasswordConfirm = userData['isPasswordConfirm'];
         _authUser.monthlyBudget = userData['monthlyBudget'].toDouble();
+        _authUser.allowNotifications = userData['allowNotifications'];
         notifyListeners();
         await setUserData(_authUser);
       } else {
@@ -67,6 +71,8 @@ class Auth with ChangeNotifier {
     _authUser.isPasswordConfirm =
         extractedUserData['isPasswordConfirm'] as bool;
     _authUser.monthlyBudget = extractedUserData['monthlyBudget'] as double;
+    _authUser.allowNotifications =
+        extractedUserData['allowNotifications'] as bool;
     notifyListeners();
   }
 
@@ -148,6 +154,34 @@ class Auth with ChangeNotifier {
       return 'משתמש לא נמצא';
     }
     return 'אירעה שגיאה';
+  }
+
+  Future<String> updateProfile(Map<String, dynamic> data) async {
+    if (data['password'] == null) {
+      data.remove('password');
+    }
+    if (data['currentPassword'] == null) {
+      data.remove('currentPassword');
+    }
+
+    var res = await http.patch(
+      Uri.parse('${dotenv.env['API']}/users/update'),
+      headers: await headers(),
+      body: json.encode(data),
+    );
+    if (res.statusCode == 200) {
+      User user = createUser(jsonDecode(res.body));
+      _authUser = user;
+      setUserData(authUser);
+      notifyListeners();
+      return 'done';
+    } else {
+      final result = json.decode(res.body);
+      if (result['message'] == 'Password is incorrect') {
+        return 'סיסמא לא נכונה';
+      }
+    }
+    return 'error';
   }
 
   Future<void> logout() async {

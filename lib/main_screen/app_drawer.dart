@@ -1,7 +1,8 @@
-import 'package:expense_tracker_app/user/user_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'package:expense_tracker_app/auth/profile.dart';
+import 'package:expense_tracker_app/user/user_avatar.dart';
 import 'package:expense_tracker_app/group/group_page.dart';
 import 'package:expense_tracker_app/auth/auth_screen.dart';
 import 'package:expense_tracker_app/expenses/montly_expenses_charts.dart';
@@ -48,6 +49,26 @@ class AppDrawer extends StatelessWidget {
                   children: [
                     const SizedBox(
                       height: 40,
+                    ),
+                    ListTile(
+                      leading: Icon(
+                        Icons.person,
+                        color: Theme.of(context).colorScheme.secondary,
+                      ),
+                      title: const Text(
+                        'פרופיל',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 26,
+                        ),
+                      ),
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.pushNamed(
+                          context,
+                          Profile.routeName,
+                        );
+                      },
                     ),
                     ListTile(
                       leading: Icon(

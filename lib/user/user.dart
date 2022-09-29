@@ -4,6 +4,7 @@ class User {
   String name;
   bool isPasswordConfirm;
   double monthlyBudget;
+  bool allowNotifications;
 
   User({
     required this.id,
@@ -11,5 +12,6 @@ class User {
     required this.name,
     required this.isPasswordConfirm,
     required this.monthlyBudget,
+    required this.allowNotifications,
   });
 }

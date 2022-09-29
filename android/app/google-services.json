@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "1061587763427",
+    "project_id": "expense-tracker-86b64",
+    "storage_bucket": "expense-tracker-86b64.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1061587763427:android:a2a7159de92ac113b4c5d6",
+        "android_client_info": {
+          "package_name": "com.savingoals.expensetracker"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1061587763427-5lnnfmhc4rd4mhc2uloj2ffm62qm19aa.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDAsMUOOXA02zY4UT43cPRtEEpKdtC9aOo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1061587763427-5lnnfmhc4rd4mhc2uloj2ffm62qm19aa.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1061587763427-8d5j69rpclvk5lm8kdelm37qilerg3gs.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.savingoals.expensetracker"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

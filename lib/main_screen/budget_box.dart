@@ -156,6 +156,10 @@ class _BudgetBoxState extends State<BudgetBox> {
                 TextButton(
                   style: TextButton.styleFrom(
                     backgroundColor: Theme.of(context).colorScheme.secondary,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 30.0,
+                      vertical: 8.0,
+                    ),
                   ),
                   onPressed: () {
                     budgetDialog(context);
