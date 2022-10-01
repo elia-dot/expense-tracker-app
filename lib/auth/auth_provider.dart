@@ -82,17 +82,21 @@ class Auth with ChangeNotifier {
       Uri.parse('${dotenv.env['API']}/auth/login'),
       body: data,
     );
-    var resData = json.decode(res.body);
-    if (res.statusCode >= 400 && res.statusCode < 500) {
-      return 'אימייל או סיסמא לא נכונים';
-    } else if (res.statusCode >= 500) {
+    if (res.body.isNotEmpty) {
+      var resData = json.decode(res.body);
+      if (res.statusCode >= 400 && res.statusCode < 500) {
+        return 'אימייל או סיסמא לא נכונים';
+      } else if (res.statusCode >= 500) {
+        return 'אירעה שגיאה';
+      }
+      final prefs = await SharedPreferences.getInstance();
+      prefs.setString('authToken', resData['access_token']);
+      getCurrentUser();
+      await setPushToken();
+      return 'login';
+    } else {
       return 'אירעה שגיאה';
     }
-    final prefs = await SharedPreferences.getInstance();
-    prefs.setString('authToken', resData['access_token']);
-    getCurrentUser();
-    await setPushToken();
-    return 'login';
   }
 
   Future<String> register(Map<String, dynamic> data) async {
