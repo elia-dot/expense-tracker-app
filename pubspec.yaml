@@ -27,6 +27,8 @@ dependencies:
   firebase_messaging: ^13.0.3
   firebase_core: ^1.24.0
   flutter_local_notifications: ^11.0.1
+  cloudinary_sdk: ^4.0.2+10
+  image_picker: ^0.8.5+3
 
 dev_dependencies:
   flutter_test:

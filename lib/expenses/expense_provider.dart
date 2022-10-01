@@ -270,8 +270,7 @@ class ExpenseProvider with ChangeNotifier {
       category: shop['category'],
       isOnline: shop['isOnline'],
       createdForGroupId: shop['createdForGroupId'],
+      imageUrl: shop['imageUrl'],
     );
   }
-
- 
 }

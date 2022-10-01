@@ -2,7 +2,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'package:expense_tracker_app/notifications/local_notifications_service.dart';
+import 'package:expense_tracker_app/services/local_notifications_service.dart';
 import 'package:expense_tracker_app/main_screen/budget_box.dart';
 import 'package:expense_tracker_app/main_screen/update_password.dart';
 import 'package:expense_tracker_app/auth/auth_provider.dart';

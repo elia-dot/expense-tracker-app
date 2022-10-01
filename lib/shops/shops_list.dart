@@ -1,4 +1,5 @@
 import 'package:expandable/expandable.dart';
+import 'package:expense_tracker_app/shops/shop_image.dart';
 import 'package:expense_tracker_app/utils/formater.dart';
 import 'package:flutter/material.dart';
 
@@ -97,9 +98,14 @@ class _ShopsListState extends State<ShopsList> {
                             );
                           },
                           style: ListTileStyle.list,
-                          leading: shop.isOnline
-                              ? const Icon(Icons.computer_outlined)
-                              : const Icon(Icons.home),
+                          leading: shop.imageUrl != null
+                              ? ShopImage(
+                                  imageUrl: cloudinaryUrl(shop.imageUrl!),
+                                  size: 40,
+                                )
+                              : shop.isOnline
+                                  ? const Icon(Icons.computer_outlined)
+                                  : const Icon(Icons.home),
                           title: Text(shop.name),
                           trailing: Icon(
                             Icons.arrow_forward,

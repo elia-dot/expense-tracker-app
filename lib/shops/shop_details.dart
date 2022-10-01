@@ -1,10 +1,14 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:image_picker/image_picker.dart';
 
 import 'package:expense_tracker_app/expenses/expense_provider.dart';
 import 'package:expense_tracker_app/shops/shop.dart';
 import 'package:expense_tracker_app/utils/formater.dart';
+import 'package:expense_tracker_app/services/cloudinary_service.dart';
 
 enum ShopDeatilsMode { view, edit }
 
@@ -18,6 +22,9 @@ class ShopDetails extends StatefulWidget {
 
 class _ShopDetailsState extends State<ShopDetails> {
   final TextEditingController _categoryController = TextEditingController();
+  final ImagePicker _picker = ImagePicker();
+  final CloudinaryService _cloudinaryService = CloudinaryService.instance;
+  File? pickedImage;
   ShopDeatilsMode mode = ShopDeatilsMode.view;
   bool isOnline = false;
   String category = '';
@@ -27,21 +34,32 @@ class _ShopDetailsState extends State<ShopDetails> {
     setState(() {
       isLoading = true;
     });
-    final data = {
-      'category': category,
+    Map<String, dynamic> data = {
       'isOnline': isOnline,
     };
-    String res = await Provider.of<ShopProvider>(context, listen: false)
-        .updateShop(shopId, data);
-    if (res == 'done') {
-      setState(() {
-        mode = ShopDeatilsMode.view;
-      });
-      Future.delayed(Duration.zero, () {
-        Provider.of<ExpenseProvider>(context, listen: false)
-            .fetchAndSetExpenses();
-      });
+    if (category.isNotEmpty) {
+      data['category'] = category;
     }
+    if (pickedImage != null) {
+      final imageId = await _cloudinaryService.uploadImage(
+        pickedImage!.path,
+        'shops',
+      );
+      data['imageUrl'] = imageId;
+    }
+    Future.delayed(Duration.zero, () async {
+      String res = await Provider.of<ShopProvider>(context, listen: false)
+          .updateShop(shopId, data);
+      if (res == 'done') {
+        setState(() {
+          mode = ShopDeatilsMode.view;
+        });
+        Future.delayed(Duration.zero, () {
+          Provider.of<ExpenseProvider>(context, listen: false)
+              .fetchAndSetExpenses();
+        });
+      }
+    });
     setState(() {
       isLoading = false;
     });
@@ -108,24 +126,57 @@ class _ShopDetailsState extends State<ShopDetails> {
               ),
               Stack(
                 children: [
-                  const CircleAvatar(
-                    radius: 50,
-                    backgroundImage: AssetImage('assets/logo.png'),
+                  Container(
+                    width: 100,
+                    height: 100,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Theme.of(context).primaryColor,
+                        width: 2,
+                      ),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(50),
+                      child: pickedImage != null
+                          ? Image.file(pickedImage!, fit: BoxFit.cover)
+                          : shop.imageUrl != null
+                              ? Image.network(
+                                  cloudinaryUrl(shop.imageUrl!),
+                                  fit: BoxFit.cover,
+                                )
+                              : Icon(
+                                  Icons.store,
+                                  size: 50,
+                                  color: Theme.of(context).primaryColor,
+                                ),
+                    ),
                   ),
                   if (mode == ShopDeatilsMode.edit)
                     Positioned(
                       top: 0,
                       right: 0,
-                      child: Container(
-                        height: 40,
-                        width: 40,
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).primaryColor,
-                          borderRadius: BorderRadius.circular(50),
-                        ),
-                        child: const Icon(
-                          Icons.edit,
-                          color: Colors.white,
+                      child: GestureDetector(
+                        onTap: () async {
+                          XFile? image = await _picker.pickImage(
+                              source: ImageSource.gallery);
+                          if (image != null) {
+                            setState(() {
+                              pickedImage = File(image.path);
+                            });
+                          }
+                        },
+                        child: Container(
+                          height: 40,
+                          width: 40,
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).primaryColor,
+                            borderRadius: BorderRadius.circular(50),
+                          ),
+                          child: const Icon(
+                            Icons.edit,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                     ),
@@ -146,42 +197,52 @@ class _ShopDetailsState extends State<ShopDetails> {
                 height: 20,
               ),
               if (mode == ShopDeatilsMode.view)
-                for (Expense expense in shop.expenses)
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: const BoxDecoration(
-                      border: Border(
-                        bottom: BorderSide(
-                          color: Colors.grey,
-                        ),
-                      ),
-                    ),
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.55,
+                  child: SingleChildScrollView(
                     child: Column(
                       children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              expenseAmount(expense.amount),
-                              style: TextStyle(
-                                color: Theme.of(context).primaryColor,
-                                fontSize: 26,
-                                fontWeight: FontWeight.bold,
+                        for (Expense expense in shop.expenses)
+                          Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: const BoxDecoration(
+                              border: Border(
+                                bottom: BorderSide(
+                                  color: Colors.grey,
+                                ),
                               ),
                             ),
-                            Text(
-                              dateFormater.format(expense.date),
-                              style: const TextStyle(
-                                color: Colors.grey,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                              ),
+                            child: Column(
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      expenseAmount(expense.amount),
+                                      style: TextStyle(
+                                        color: Theme.of(context).primaryColor,
+                                        fontSize: 26,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Text(
+                                      dateFormater.format(expense.date),
+                                      style: const TextStyle(
+                                        color: Colors.grey,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
+                          ),
                       ],
                     ),
                   ),
+                ),
               if (mode == ShopDeatilsMode.edit)
                 Expanded(
                   child: Container(

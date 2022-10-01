@@ -15,6 +15,7 @@ class Shop {
   bool isOnline;
   String createdForGroupId;
   List<Expense> expenses;
+  String? imageUrl;
 
   Shop({
     required this.id,
@@ -23,6 +24,7 @@ class Shop {
     required this.isOnline,
     required this.createdForGroupId,
     this.expenses = const [],
+    this.imageUrl,
   });
 }
 
@@ -59,6 +61,7 @@ class ShopProvider with ChangeNotifier {
             category: category['category'],
             isOnline: shop['isOnline'],
             createdForGroupId: shop['createdForGroupId'],
+            imageUrl: shop['imageUrl'],
           );
           shops.add(newShop);
         }
@@ -153,6 +156,7 @@ class ShopProvider with ChangeNotifier {
               shop.name = updatedShop['name'];
               shop.category = updatedShop['category'];
               shop.isOnline = updatedShop['isOnline'];
+              shop.imageUrl = updatedShop['imageUrl'];
             }
           }
         });

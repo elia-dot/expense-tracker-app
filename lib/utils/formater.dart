@@ -1,4 +1,5 @@
 import 'package:intl/intl.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 final dateFormater = DateFormat('dd/MM/yyyy');
 
@@ -33,3 +34,6 @@ bool isInt(double num) => num == num.roundToDouble();
 
 String expenseAmount(double amount) =>
     '${currencyFormater.currencySymbol}${numberFormater.format(double.parse(amount.toStringAsFixed(isInt(amount) ? 0 : 1)))}';
+
+String cloudinaryUrl(String publicId) =>
+    '${dotenv.env['CLOUDINARY_URL']}/$publicId';
