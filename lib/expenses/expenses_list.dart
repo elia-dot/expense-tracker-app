@@ -49,9 +49,8 @@ class ExpensesList extends StatelessWidget {
                 children: [
                   Container(
                     width: 100,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(5),
-                      color: Theme.of(context).primaryColor,
+                    decoration: const BoxDecoration(
+                      border: Border(left: BorderSide(color: Colors.grey)),
                     ),
                     padding: const EdgeInsets.symmetric(
                       vertical: 5,
@@ -60,10 +59,10 @@ class ExpensesList extends StatelessWidget {
                     child: Text(
                       expenseAmount(_expenses[index].amount),
                       textAlign: TextAlign.center,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                        color: Theme.of(context).primaryColor,
                       ),
                     ),
                   ),

@@ -1,8 +1,10 @@
-import 'package:expense_tracker_app/main_screen/budget_box.dart';
-import 'package:expense_tracker_app/main_screen/update_password.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'package:expense_tracker_app/notifications/local_notifications_service.dart';
+import 'package:expense_tracker_app/main_screen/budget_box.dart';
+import 'package:expense_tracker_app/main_screen/update_password.dart';
 import 'package:expense_tracker_app/auth/auth_provider.dart';
 import 'package:expense_tracker_app/main_screen/expense_filter_options.dart';
 import 'package:expense_tracker_app/expenses/add_expense.dart';
@@ -11,6 +13,10 @@ import 'package:expense_tracker_app/main_screen/main_screen_chart.dart';
 import 'package:expense_tracker_app/expenses/expense_provider.dart';
 import 'package:expense_tracker_app/main_screen/app_drawer.dart';
 import 'package:expense_tracker_app/utils/formater.dart';
+
+Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  debugPrint("Handling a background message");
+}
 
 class MainScreen extends StatefulWidget {
   static const routeName = '/main';
@@ -25,6 +31,7 @@ class _MainScreenState extends State<MainScreen> {
   late PageController _pageController;
   int initialPage = 0;
   Future<void> expensesFuture = Future.value();
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
 
   String get filterText {
     switch (Provider.of<ExpenseProvider>(context, listen: false).filter) {
@@ -59,6 +66,9 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   initState() {
+    messaging.requestPermission();
+    LocalNotificationsService.initialize();
+    FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
     getExpenses();
     _pageController = PageController();
     super.initState();

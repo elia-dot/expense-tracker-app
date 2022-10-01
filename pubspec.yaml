@@ -24,6 +24,9 @@ dependencies:
   syncfusion_flutter_charts: ^20.2.50
   flutter_custom_dialog: ^1.2.0
   percent_indicator: ^4.2.2
+  firebase_messaging: ^13.0.3
+  firebase_core: ^1.24.0
+  flutter_local_notifications: ^11.0.1
 
 dev_dependencies:
   flutter_test:

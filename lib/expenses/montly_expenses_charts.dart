@@ -183,7 +183,9 @@ class _MonthlyChartsState extends State<MonthlyCharts> {
                 ),
               ),
               SizedBox(
-                height: MediaQuery.of(context).size.height * 0.4,
+                height: MediaQuery.of(context).size.height -
+                    MediaQuery.of(context).size.width -
+                    100,
                 child: SingleChildScrollView(
                   child: Column(
                     children: [

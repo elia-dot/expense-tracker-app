@@ -138,7 +138,7 @@ class _GroupPageState extends State<GroupPage> {
                   'הוסף חבר',
                   style: TextStyle(
                     color: Theme.of(context).primaryColor,
-                    fontSize: 26,
+                    fontSize: 22,
                   ),
                 ),
                 onTap: () {

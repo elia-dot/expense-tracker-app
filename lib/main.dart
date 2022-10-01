@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
 import 'package:expense_tracker_app/auth/profile.dart';
 import 'package:expense_tracker_app/group/group_provider.dart';
@@ -17,6 +19,9 @@ import 'package:expense_tracker_app/auth/auth_screen.dart';
 
 void main() async {
   await dotenv.load(fileName: '.env');
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(MyApp());
 }
 
@@ -51,7 +56,6 @@ class MyApp extends StatelessWidget {
             }
           },
           child: MaterialApp(
-            title: 'Flutter Demo',
             theme: ThemeData(
               primarySwatch: AppColors.primaryColor,
               colorScheme: theme.colorScheme.copyWith(
@@ -59,6 +63,7 @@ class MyApp extends StatelessWidget {
               ),
               appBarTheme: const AppBarTheme(
                 color: AppColors.primaryColor,
+                centerTitle: true,
               ),
               elevatedButtonTheme: ElevatedButtonThemeData(
                 style: ElevatedButton.styleFrom(

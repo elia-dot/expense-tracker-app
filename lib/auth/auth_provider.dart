@@ -1,11 +1,12 @@
 import 'dart:convert';
 
-import 'package:expense_tracker_app/user/craete_user.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:expense_tracker_app/user/craete_user.dart';
 import 'package:expense_tracker_app/utils/headers.dart';
 import 'package:expense_tracker_app/user/user.dart';
 
@@ -90,6 +91,7 @@ class Auth with ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     prefs.setString('authToken', resData['access_token']);
     getCurrentUser();
+    await setPushToken();
     return 'login';
   }
 
@@ -110,7 +112,17 @@ class Auth with ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     prefs.setString('authToken', resData['access_token']);
     getCurrentUser();
+    await setPushToken();
     return 'register';
+  }
+
+  Future<void> setPushToken() async {
+    final token = await FirebaseMessaging.instance.getToken();
+    await http.post(
+      Uri.parse('${dotenv.env['API']}/users/update-push-token'),
+      body: json.encode({'pushToken': token}),
+      headers: await headers(),
+    );
   }
 
   Future<void> updatePassword(String password) async {
