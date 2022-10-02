@@ -91,7 +91,7 @@ class Auth with ChangeNotifier {
       }
       final prefs = await SharedPreferences.getInstance();
       prefs.setString('authToken', resData['access_token']);
-      getCurrentUser();
+      await getCurrentUser();
       await setPushToken();
       return 'login';
     } else {
@@ -115,7 +115,7 @@ class Auth with ChangeNotifier {
     }
     final prefs = await SharedPreferences.getInstance();
     prefs.setString('authToken', resData['access_token']);
-    getCurrentUser();
+    await getCurrentUser();
     await setPushToken();
     return 'register';
   }
@@ -149,7 +149,6 @@ class Auth with ChangeNotifier {
       headers: await headers(),
       body: json.encode({'monthlyBudget': budget}),
     );
-
     if (res.statusCode == 200) {
       _authUser.monthlyBudget = budget;
       setUserData(authUser);
