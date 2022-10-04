@@ -1,3 +1,4 @@
+import 'package:expense_tracker_app/auth/auth_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -414,6 +415,54 @@ class _ProfileState extends State<Profile> {
                     ],
                   ),
                 ),
+              if (mode == Mode.edit)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      showDialog(
+                          context: context,
+                          builder: ((context) {
+                            return AlertDialog(
+                              title: const Text('האם אתה בטוח?'),
+                              content: const Text(
+                                'האם אתה בטוח שברצונך למחוק את החשבון?',
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: const Text('ביטול'),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    authProvider.deleteUser();
+                                    Navigator.of(context).pushReplacementNamed(
+                                      AuthScreen.routeName,
+                                    );
+                                  },
+                                  child: const Text('מחק'),
+                                ),
+                              ],
+                            );
+                          }));
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: const [
+                        Icon(Icons.delete),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Text('מחק חשבון'),
+                      ],
+                    ),
+                  ),
+                )
             ],
           ),
         ),

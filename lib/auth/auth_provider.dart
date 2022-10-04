@@ -199,6 +199,18 @@ class Auth with ChangeNotifier {
     return 'error';
   }
 
+  Future<String> deleteUser() async {
+    var res = await http.delete(
+      Uri.parse('${dotenv.env['API']}/users/${authUser.id}'),
+      headers: await headers(),
+    );
+    if (res.statusCode == 200) {
+      await logout();
+      return 'done';
+    }
+    return 'error';
+  }
+
   Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
     prefs.clear();
