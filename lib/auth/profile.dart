@@ -106,7 +106,7 @@ class _ProfileState extends State<Profile> {
         textDirection: TextDirection.rtl,
         child: SizedBox(
           width: double.infinity,
-          child: Column(
+          child: ListView(
             children: [
               const SizedBox(
                 height: 50,
