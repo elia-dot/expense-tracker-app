@@ -58,7 +58,8 @@ class _ShopsPageState extends State<ShopsPage> {
                       ),
                     ),
                     SizedBox(
-                      child: ShopsList(shops: shops, categoryExpenses: categoryExpenses),
+                      child: ShopsList(
+                          shops: shops, categoryExpenses: categoryExpenses),
                     ),
                   ],
                 ),

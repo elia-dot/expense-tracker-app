@@ -31,6 +31,9 @@ class _ShopDetailsState extends State<ShopDetails> {
   bool isLoading = false;
 
   Future<void> update(String shopId) async {
+    final shopProvider = Provider.of<ShopProvider>(context, listen: false);
+    final expenseProvider =
+        Provider.of<ExpenseProvider>(context, listen: false);
     setState(() {
       isLoading = true;
     });
@@ -48,18 +51,15 @@ class _ShopDetailsState extends State<ShopDetails> {
       data['imageUrl'] = imageId;
     }
     Future.delayed(Duration.zero, () async {
-      String res = await Provider.of<ShopProvider>(context, listen: false)
-          .updateShop(shopId, data);
+      String res = await shopProvider.updateShop(context, shopId, data);
       if (res == 'done') {
         setState(() {
           mode = ShopDeatilsMode.view;
         });
-        Future.delayed(Duration.zero, () {
-          Provider.of<ExpenseProvider>(context, listen: false)
-              .fetchAndSetExpenses();
-        });
+        expenseProvider.fetchAndSetExpenses();
       }
     });
+
     setState(() {
       isLoading = false;
     });

@@ -1,12 +1,13 @@
 import 'dart:convert';
 
-import 'package:expense_tracker_app/user/user.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
+import 'package:expense_tracker_app/user/user.dart';
 import 'package:expense_tracker_app/utils/headers.dart';
 import 'package:expense_tracker_app/expenses/expense_provider.dart';
+import 'package:provider/provider.dart';
 
 class Shop {
   String id;
@@ -34,7 +35,9 @@ class ShopProvider with ChangeNotifier {
   List<String> shopSearchResults = [];
 
   List<Map<String, List<Shop>>> get groupShops {
-    return _shops;
+    return _shops
+        .where((element) => element[element.keys.first]!.isNotEmpty)
+        .toList();
   }
 
   Map<String, dynamic> get categoryExpenses {
@@ -140,7 +143,9 @@ class ShopProvider with ChangeNotifier {
     return currentShop;
   }
 
-  Future<String> updateShop(String id, Map data) async {
+  Future<String> updateShop(BuildContext context, String id, Map data) async {
+    final expenses =
+        Provider.of<ExpenseProvider>(context, listen: false).expenses;
     final res = await http.patch(
       Uri.parse('${dotenv.env['API']}/shops/$id'),
       headers: await headers(),
@@ -203,6 +208,13 @@ class ShopProvider with ChangeNotifier {
         if (_shops[oldCategoryIndex][oldCategoryName]!.isEmpty) {
           _shops.removeAt(oldCategoryIndex);
         }
+      }
+
+      final List<Expense> shopExpenses =
+          expenses.where((element) => element.shop.id == shop.id).toList();
+      
+      for (var expense in shopExpenses) {
+        expense.shop = shop;
       }
 
       notifyListeners();

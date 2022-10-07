@@ -50,10 +50,13 @@ class _MainScreenState extends State<MainScreen> {
     }
   }
 
-  Future<void> getExpenses() async {
-    setState(() {
-      isLoading = true;
-    });
+  Future<void> getExpenses(bool isInitial) async {
+    if (isInitial) {
+      setState(() {
+        isLoading = true;
+      });
+    }
+
     final expensesProvider =
         Provider.of<ExpenseProvider>(context, listen: false);
     await expensesProvider.fetchAndSetExpenses();
@@ -69,7 +72,7 @@ class _MainScreenState extends State<MainScreen> {
     messaging.requestPermission();
     LocalNotificationsService.initialize();
     FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
-    getExpenses();
+    getExpenses(true);
     _pageController = PageController();
     super.initState();
   }
@@ -175,7 +178,8 @@ class _MainScreenState extends State<MainScreen> {
                                       ),
                                       builder: ((context) {
                                         return ExpenseFilterOptions(
-                                            expensesProvider: expensesProvider);
+                                          expensesProvider: expensesProvider,
+                                        );
                                       }),
                                     );
                                   },
@@ -190,7 +194,8 @@ class _MainScreenState extends State<MainScreen> {
                             ),
                           ),
                           Expanded(
-                            child: ExpensesList(expenses: expenses),
+                            child: ExpensesList(
+                                expenses: expenses, getExpenses: getExpenses),
                           ),
                         ],
                       ),

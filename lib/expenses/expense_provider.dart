@@ -1,11 +1,11 @@
 import 'dart:convert';
 import 'dart:math';
 
-import 'package:expense_tracker_app/user/craete_user.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/material.dart';
 
+import 'package:expense_tracker_app/user/craete_user.dart';
 import 'package:expense_tracker_app/utils/headers.dart';
 import 'package:expense_tracker_app/chartdata/category_chart_data.dart';
 import 'package:expense_tracker_app/chartdata/chart_data.dart';
@@ -22,7 +22,7 @@ enum FilterOptions {
 
 class Expense {
   final String id;
-  final Shop shop;
+  Shop shop;
   final double amount;
   final DateTime date;
   final User createdBy;
