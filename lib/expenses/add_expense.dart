@@ -25,7 +25,7 @@ class _AddExpenseState extends State<AddExpense> {
     setState(() {
       isLoading = true;
     });
-    final data = {'shop': shop, 'amount': amount, 'installment': installment};
+    final data = {'shop': shop, 'amount': amount, 'installments': installment};
     String res = await Provider.of<ExpenseProvider>(context, listen: false)
         .addExpense(data);
     setState(() {
